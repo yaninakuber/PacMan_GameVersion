@@ -56,7 +56,7 @@ public class GridController : MonoBehaviour
             {
                 bool walkable = !(Physics.CheckSphere(new Vector3(xStart + i, 0, zStart + j), 0.4f, UnWalkable));
 
-                gridTiles[i, j] = new Tile(i, j, 0, walkable); // 0= free
+                gridTiles[i, j] = new Tile(i, j, TileState.Free, walkable); 
             }
         }
     }
