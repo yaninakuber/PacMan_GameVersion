@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class GridController : MonoBehaviour
 {
-    public GameObject LeftTile;
-    public GameObject RightTile;
+    public GameObject StartTile;
+    public GameObject EndTile;
 
-    Tile[,] myGrid;
+    Tile[,] gridTiles;
 
     public List<Tile> path;
 
@@ -20,8 +20,8 @@ public class GridController : MonoBehaviour
     int xEnd;
     int zEnd;
 
-    int quantityVerticalCell;
-    int quantityHorizontalCell;
+    int horizontalCellCount;
+    int verticalCellCount;
 
     int cellWidth = 1;
     int cellHeight = 1;
@@ -34,32 +34,44 @@ public class GridController : MonoBehaviour
 
     void CreateGrid ()
     {
-        xStart = (int)LeftTile.transform.position.x;
-        zStart = (int)LeftTile.transform.position.z;
+        xStart = (int)StartTile.transform.position.x;
+        zStart = (int)StartTile.transform.position.z;
 
-        xEnd = (int)RightTile.transform.position.x;
-        zEnd = (int)RightTile.transform.position.z;
+        xEnd = (int)EndTile.transform.position.x;
+        zEnd = (int)EndTile.transform.position.z;
 
-        quantityHorizontalCell = (int)(xEnd - xStart / cellWidth);
-        quantityVerticalCell = (int)(zEnd - zStart / cellHeight);
+        verticalCellCount = (int)(((xEnd - xStart)+1) / cellWidth);
+        horizontalCellCount = (int)(((zEnd - zStart)+1) / cellHeight);
 
-        myGrid = new Tile[quantityHorizontalCell, quantityVerticalCell];
+        gridTiles = new Tile[verticalCellCount, horizontalCellCount];
 
         UpdateGrid();
     }   
 
     public void UpdateGrid()
     {
-        for (int i = 0; i <= quantityHorizontalCell; i++)
+        for (int i = 0; i < verticalCellCount; i++)
         {
-            for(int j = 0; j <= quantityVerticalCell; j++)
+            for(int j = 0; j < horizontalCellCount; j++)
             {
                 bool walkable = !(Physics.CheckSphere(new Vector3(xStart + i, 0, zStart + j), 0.4f, UnWalkable));
 
-                myGrid[i, j] = new Tile(i, j, 0, walkable); // 0= free
+                gridTiles[i, j] = new Tile(i, j, 0, walkable); // 0= free
             }
         }
     }
 
+    private void OnDrawGizmos()
+    {
+        if (gridTiles != null)
+        {
+            foreach (Tile tile in gridTiles)
+            {
+                Gizmos.color = (tile.IsWalkable) ? Color.white : Color.red;
+
+                Gizmos.DrawWireCube(new Vector3(xStart + tile.PositionX, 0.75f, zStart + tile.PositionZ), new Vector3 (0.8f, 1.5f, 0.8f));
+            }
+        }
+    }
 
 }
