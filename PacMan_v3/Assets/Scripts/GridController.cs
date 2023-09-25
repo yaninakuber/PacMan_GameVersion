@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class GridController : MonoBehaviour
 {
-    public GameObject StartTile;
-    public GameObject EndTile;
+    public GameObject StartPointOfGrill;
+    public GameObject EndPointOfGrill;
+    
+    //DEBUG
+    public GameObject start;
+    public GameObject goal;
 
-    Tile[,] gridTiles;
+    Node[,] gridTiles; // representa la grilla. Cada elemento es un nodo que contiene informacion de la clase
 
-    public List<Tile> path;
+    public List<Node> path; // Lista de nodos que representan el camino calculado por el algoritmo
 
-    public LayerMask UnWalkable;
+    public LayerMask UnWalkable; //cuales nodos deben ser obtaculos y cuales no
 
     //GRID INFO
     int xStart;
@@ -34,18 +38,20 @@ public class GridController : MonoBehaviour
 
     void CreateGrid ()
     {
-        xStart = (int)StartTile.transform.position.x;
-        zStart = (int)StartTile.transform.position.z;
+        // obtiene coordenadas del punto de inicio y fin de la cuadricula
+        xStart = (int)StartPointOfGrill.transform.position.x; 
+        zStart = (int)StartPointOfGrill.transform.position.z;
 
-        xEnd = (int)EndTile.transform.position.x;
-        zEnd = (int)EndTile.transform.position.z;
-
+        xEnd = (int)EndPointOfGrill.transform.position.x;
+        zEnd = (int)EndPointOfGrill.transform.position.z;
+        
+        //calcula el numero de celdas en la grilla en los dos ejes
         verticalCellCount = (int)(((xEnd - xStart)+1) / cellWidth);
         horizontalCellCount = (int)(((zEnd - zStart)+1) / cellHeight);
 
-        gridTiles = new Tile[verticalCellCount, horizontalCellCount];
+        gridTiles = new Node[verticalCellCount, horizontalCellCount]; // matriz que representa la cuadricula del juego - especifico la extension de la cuadricula 
 
-        UpdateGrid();
+        UpdateGrid(); // llena la matriz gridTiles con nodos determinando si cada celda es transitable o no
     }   
 
     public void UpdateGrid()
@@ -54,9 +60,9 @@ public class GridController : MonoBehaviour
         {
             for(int j = 0; j < horizontalCellCount; j++)
             {
-                bool walkable = !(Physics.CheckSphere(new Vector3(xStart + i, 0, zStart + j), 0.4f, UnWalkable));
+                bool walkable = !(Physics.CheckSphere(new Vector3(xStart + i, 0, zStart + j), 0.4f, UnWalkable)); // verifica si la celda es transitable : true
 
-                gridTiles[i, j] = new Tile(i, j, TileState.Free, walkable); 
+                gridTiles[i, j] = new Node(i, j, NodeState.Free, walkable); //crea un nuevo nodo y lo asigna a la matriz gridTiles // llamo al constructor
             }
         }
     }
@@ -65,13 +71,80 @@ public class GridController : MonoBehaviour
     {
         if (gridTiles != null)
         {
-            foreach (Tile tile in gridTiles)
+            foreach (Node node in gridTiles) //recorre todos los nodos 
             {
-                Gizmos.color = (tile.IsWalkable) ? Color.white : Color.red;
+                Gizmos.color = (node.IsWalkable) ? Color.white : Color.red;
 
-                Gizmos.DrawWireCube(new Vector3(xStart + tile.PositionX, 0.75f, zStart + tile.PositionZ), new Vector3 (0.8f, 1.5f, 0.8f));
+                if(path != null) // si hay un camino calculado en la lista path
+                {
+                    if (path.Contains(node)) //se verifica si el nodo actual esta en la lista 
+                    {
+                        Gizmos.color = Color.green; // si es asi se cambia el color a verde 
+                    }
+                }
+
+                Gizmos.DrawWireCube(new Vector3(xStart + node.PositionX, 0.75f, zStart + node.PositionZ), new Vector3 (0.8f, 1.5f, 0.8f)); // dibujo alrededor del nodo (cubo)
             }
         }
+    }
+
+    public Node NodeRequest(Vector3 position) //Mapear un posición a un nodo en la grilla
+    {
+        // Calcula la distancia desde la posición a lo largo de los ejes X y Z
+        int gridX = (int)Vector3.Distance(new Vector3(position.x, 0, 0), new Vector3(xStart, 0, 0)); // Esto da una idea de cuán lejos está la posición en el eje X desde el inicio de la cuadrícula. 
+        int gridZ = (int)Vector3.Distance(new Vector3(0,0, position.z), new Vector3(0, 0, zStart));
+
+        // Devuelve el nodo correspondiente en la cuadrícula de la posicion especificada
+        return gridTiles[gridX, gridZ];
+    }
+
+    public List<Node> GetNeighborNodes (Node node) 
+    {
+        List<Node> neighbours = new List<Node>(); //representa todos los Nodos vecinos del Nodo actual
+        //find all neighbors in a 3x3 scuare around current node
+        for (int x = -1; x <= 1 ; x++)
+        {
+            for (int z = -1; z <= 1 ; z++) 
+            { 
+                //ignora nodos diagonales por que no se analizan recorridos diagonales
+                //ignore following fields 
+                if(x == 0 && z == 0)
+                {
+                    continue;
+                }
+                //ignore top left
+                if(x == -1 && z == 1)
+                {
+                    continue;
+                }
+                //ignore top right
+                if(x == 1 & z == 1)
+                {
+                    continue;
+                }
+                //ignore bottom left
+                if (x == 1 & z == -1)
+                {
+                    continue;
+                }
+                //ignore bottom right
+                if (x == -1 & z == -1)
+                {
+                    continue;
+                }
+
+                // Calcular las coordenadas de la posición a verificar
+                int checkPositionX = node.PositionX + x;
+                int checkPositionZ = node.PositionZ + z;
+
+                // Verificar si las coordenadas están dentro de los límites de la cuadrícula // Esto se hace para asegurarse de que no se acceda a posiciones fuera de la cuadrícula, lo que podría causar errores.
+                if ( checkPositionX >= 0 && checkPositionX <= (horizontalCellCount + 1) && checkPositionZ >= 0 && checkPositionZ < (verticalCellCount + 1))
+                {
+                    neighbours.Add(gridTiles[checkPositionX,checkPositionZ]);
+                }        
+            }
+        }
+        return neighbours; // la función devuelve la lista neighbours, que contiene todos los nodos vecinos válidos al nodo actual.
     }
 
 }
