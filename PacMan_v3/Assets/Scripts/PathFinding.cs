@@ -5,37 +5,44 @@ using UnityEngine;
 
 public class PathFinding : MonoBehaviour
 {
+    //PATHFINDING//
     List<Node> path = new List<Node>(); // almacenar los nodos que forman la ruta desde el nodo de destino hasta el nodo de inicio.
-
-    int MovementCost = 10; // valor del costo de movimiento
-
+    int MovementCost = 10; //Heuristic Distance - Cost per step
+    Node lastVisitedNode;
     public GridController grid; // referencia al controllador de la cuadricula
 
+    //TARGET//
     public GameObject PacMan;
 
-    //Movement
+    //MOVEMENT//
     public float SpeedGhost = 3f;
     Vector3 nextPosition;
     Vector3 destination;
 
-    //Rotation
+    //DIRECTION//
     Vector3 up = Vector3.zero,
     right = new Vector3(0, 90, 0),
     down = new Vector3(0, 180, 0),
     left = new Vector3(0, 270, 0),
     currentDirection = Vector3.zero;
 
-    Node lastVisitedNode;
-
-
-
-
-    /*
-    private void Awake()
+    //STATEMACHINE//
+    public enum GhostStates
     {
-        grid = GetComponent<GridController>(); 
+        Home,
+        LeavingHome, //salio de casa
+        Chase, //perseguir
+        Scatter,
+        Frightend, //pastilla de poder
+        GotEaten, //fue comido, ojos
     }
-    */
+
+    public GhostStates state;
+
+
+
+
+
 
     private void Start()
     {
@@ -59,7 +66,7 @@ public class PathFinding : MonoBehaviour
 
         //add start Node
         openList.Add(startNode);
-        
+
         // Start search looping
         while (openList.Count > 0)
         {
@@ -73,7 +80,7 @@ public class PathFinding : MonoBehaviour
             }
             openList.Remove(currentNode); //Una vez seleccionado el current Node se elimina de la lista Open List 
             closedList.Add(currentNode); // y se agrega a la closed list
-            
+
             //goal has been found?
             if (currentNode == goalNode)  //si el current es igual al destino ya se encontro el camino
             {
@@ -81,9 +88,11 @@ public class PathFinding : MonoBehaviour
                 CalculatePath(startNode, goalNode);
                 return;
             }
+
+            //CHECK ALL NEIGHBOR NODES - EXCEPT BACKWARDS//
             foreach (Node neighbor in grid.GetNeighborNodes(currentNode)) //sino se encontro el objetivo se procede a explorar a los vecinos del current node //por cada vecino: 
             {
-                if(!neighbor.IsWalkable || closedList.Contains(neighbor) || neighbor == lastVisitedNode) // se verifica que sea transitable y q no este en la closed list 
+                if (!neighbor.IsWalkable || closedList.Contains(neighbor) || neighbor == lastVisitedNode) // se verifica que sea transitable y q no este en la closed list 
                 {
                     continue;
                 }
@@ -98,87 +107,88 @@ public class PathFinding : MonoBehaviour
                     if (!openList.Contains(neighbor)) // Si el vecino no está en la lista openList, se agrega a la lista para su consideración en futuras iteraciones.
                     {
                         openList.Add(neighbor);
-                    }    
+                    }
                 }
             }
         }
- 
-        void CalculatePath (Node startNode, Node endNode) //  rastrear la ruta desde el nodo de destino (endNode) hasta el nodo de inicio (startNode) siguiendo los enlaces de nodos padres (ParentNode) y almacenando esta ruta en una lista llamada path
-        {
-            lastVisitedNode = startNode; //coloco el start node en ya visitado 
-            path.Clear(); // me aseguro que la lista este vacia antes de calcular una nueva ruta 
-
-            Node currentNode = goalNode; // porque comenzamos desde el nodo de destino y retrocedemos hacia el nodo de inicio.
-
-            while (currentNode != startNode) //  recorrer la ruta desde el nodo de destino hasta el nodo de inicio. El bucle continúa hasta que currentNode sea igual al nodo de inicio (startNode).
-            {
-                path.Add(currentNode);
-                currentNode = currentNode.ParentNode; // En cada iteración del bucle, se agrega el nodo actual a la lista path y luego se actualiza currentNode con el nodo padre, lo que efectivamente retrocede a través de la ruta hacia el nodo de inicio.
-            }
-            //reverse path to get is sorted right
-            path.Reverse(); // Para obtener la ruta en el orden correcto, se invierte la lista utilizando el método Reverse()
-            grid.path = path; // se almacena la ruta 
-
-        }
-
-
-        int GetDistance(Node a, Node b) // estimación de la distancia entre dos nodos en una cuadrícula //  esta distancia se utiliza para ayudar a determinar la prioridad de exploración de los nodos vecinos
-        {
-            // // Calcula la diferencia en las coordenadas X e Z entre los nodos a y b.
-            int distanceX = Mathf.Abs(a.PositionX - b.PositionX);
-            int distanceZ = Mathf.Abs(a.PositionZ - b.PositionZ);
-
-            int totalDistance = distanceX + distanceZ;
-
-            // Multiplica la distancia total por un valor de costo de movimiento (MovementCost).
-            return MovementCost * totalDistance;
-        }
     }
+ 
+    void CalculatePath (Node startNode, Node goalNode) //  rastrear la ruta desde el nodo de destino (endNode) hasta el nodo de inicio (startNode) siguiendo los enlaces de nodos padres (ParentNode) y almacenando esta ruta en una lista llamada path
+    {
+        lastVisitedNode = startNode; //coloco el start node en ya visitado 
+        path.Clear(); // me aseguro que la lista este vacia antes de calcular una nueva ruta 
+
+        Node currentNode = goalNode; // porque comenzamos desde el nodo de destino y retrocedemos hacia el nodo de inicio.
+
+        while (currentNode != startNode) //  recorrer la ruta desde el nodo de destino hasta el nodo de inicio. El bucle continúa hasta que currentNode sea igual al nodo de inicio (startNode).
+        {
+            path.Add(currentNode);
+            currentNode = currentNode.ParentNode; // En cada iteración del bucle, se agrega el nodo actual a la lista path y luego se actualiza currentNode con el nodo padre, lo que efectivamente retrocede a través de la ruta hacia el nodo de inicio.
+        }
+        //reverse path to get is sorted right
+        path.Reverse(); // Para obtener la ruta en el orden correcto, se invierte la lista utilizando el método Reverse()
+        grid.path = path; // se almacena la ruta 
+
+    }
+
+
+    int GetDistance(Node a, Node b) // estimación de la distancia entre dos nodos en una cuadrícula //  esta distancia se utiliza para ayudar a determinar la prioridad de exploración de los nodos vecinos
+    {
+        // // Calcula la diferencia en las coordenadas X e Z entre los nodos a y b.
+        int distanceX = Mathf.Abs(a.PositionX - b.PositionX);
+        int distanceZ = Mathf.Abs(a.PositionZ - b.PositionZ);
+
+        int totalDistance = distanceX + distanceZ;
+
+        // Multiplica la distancia total por un valor de costo de movimiento (MovementCost).
+        return MovementCost * totalDistance;
+    }
+
 
     void MoveGhost()
     {
         transform.position = Vector3.MoveTowards(transform.position, destination, SpeedGhost * Time.deltaTime);
-        if(Vector3.Distance(transform.position, destination) < 0.0001f) 
+        if (Vector3.Distance(transform.position, destination) < 0.0001f)
         {
             FindPath();
 
             if (path.Count > 0)
             {
-                //Destination
+                //DESTINATION//
                 nextPosition = grid.NextPathPoint(path[0]);
                 destination = nextPosition;
 
-                //Rotation
+                //ROTATION//
                 SetDirection(); //actualizo rotacion
                 transform.localEulerAngles = currentDirection; //transformo el angulo local 
             }
-
-        }
-
-        void SetDirection ()
-        {
-            int directionX = (int)(nextPosition.x - transform.position.x);
-            int directionZ = (int)(nextPosition.z - transform.position.z);
-
-            if (directionX == 0 && directionZ > 0)
-            {
-                currentDirection = up;
-            }
-            else if (directionX == 0 && directionZ < 0) 
-            {
-                currentDirection = down;
-            }
-            else if (directionX > 0 && directionZ == 0)
-            {
-                currentDirection = right;
-            }
-            else if (directionX < 0 && directionZ == 0)
-            {
-                currentDirection = left;
-            }
-
         }
     }
+
+    void SetDirection ()
+    {
+        int directionX = (int)(nextPosition.x - transform.position.x);
+        int directionZ = (int)(nextPosition.z - transform.position.z);
+
+        if (directionX == 0 && directionZ > 0)
+        {
+            currentDirection = up;
+        }
+        else if (directionX == 0 && directionZ < 0) 
+        {
+            currentDirection = down;
+        }
+        else if (directionX > 0 && directionZ == 0)
+        {
+            currentDirection = right;
+        }
+        else if (directionX < 0 && directionZ == 0)
+        {
+            currentDirection = left;
+        }
+
+    }
+    
 
 
 }

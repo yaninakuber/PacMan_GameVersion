@@ -613,6 +613,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Clyde
       objectReference: {fileID: 0}
+    - target: {fileID: 4014926442163765990, guid: 427bc45ba378313449c0d2d9eb9e2914, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6481951876116632219, guid: 427bc45ba378313449c0d2d9eb9e2914, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -868,7 +872,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1273409434}
   - component: {fileID: 1273409435}
-  - component: {fileID: 1273409436}
   m_Layer: 0
   m_Name: GridObject
   m_TagString: Untagged
@@ -905,25 +908,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartPointOfGrill: {fileID: 839807758}
   EndPointOfGrill: {fileID: 990071941}
-  start: {fileID: 0}
-  goal: {fileID: 0}
   UnWalkable:
     serializedVersion: 2
     m_Bits: 64
---- !u!114 &1273409436
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1273409432}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 653b8432452aae94ea0740dcd49e2a17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grid: {fileID: 0}
-  PacMan: {fileID: 0}
 --- !u!1 &1289259596
 GameObject:
   m_ObjectHideFlags: 0
@@ -998,6 +985,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grid: {fileID: 1273409435}
   PacMan: {fileID: 1743785525}
+  SpeedGhost: 3
+  state: 0
 --- !u!23 &8129201375659405
 MeshRenderer:
   m_ObjectHideFlags: 0
