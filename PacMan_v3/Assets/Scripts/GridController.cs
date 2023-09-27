@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class GridController : MonoBehaviour
@@ -8,8 +10,8 @@ public class GridController : MonoBehaviour
     public GameObject EndPointOfGrill;
     
     //DEBUG
-    public GameObject start;
-    public GameObject goal;
+    //public GameObject start;
+    //public GameObject goal;
 
     Node[,] gridTiles; // representa la grilla. Cada elemento es un nodo que contiene informacion de la clase
 
@@ -17,7 +19,7 @@ public class GridController : MonoBehaviour
 
     public LayerMask UnWalkable; //cuales nodos deben ser obtaculos y cuales no
 
-    //GRID INFO
+    //GRID INFO - trabajar como propiedad
     int xStart;
     int zStart;
 
@@ -44,7 +46,7 @@ public class GridController : MonoBehaviour
 
         xEnd = (int)EndPointOfGrill.transform.position.x;
         zEnd = (int)EndPointOfGrill.transform.position.z;
-        
+
         //calcula el numero de celdas en la grilla en los dos ejes
         verticalCellCount = (int)(((xEnd - xStart)+1) / cellWidth);
         horizontalCellCount = (int)(((zEnd - zStart)+1) / cellHeight);
@@ -71,19 +73,20 @@ public class GridController : MonoBehaviour
     {
         if (gridTiles != null)
         {
-            foreach (Node node in gridTiles) //recorre todos los nodos 
+            foreach (Node node in gridTiles)
             {
                 Gizmos.color = (node.IsWalkable) ? Color.white : Color.red;
 
-                if(path != null) // si hay un camino calculado en la lista path
+                if (path != null)
                 {
-                    if (path.Contains(node)) //se verifica si el nodo actual esta en la lista 
+                    if (path.Contains(node))
                     {
-                        Gizmos.color = Color.green; // si es asi se cambia el color a verde 
+                        Gizmos.color = Color.green;
                     }
                 }
 
-                Gizmos.DrawWireCube(new Vector3(xStart + node.PositionX, 0.75f, zStart + node.PositionZ), new Vector3 (0.8f, 1.5f, 0.8f)); // dibujo alrededor del nodo (cubo)
+                Vector3 nodePosition = new Vector3(xStart + node.PositionX, 0.75f, zStart + node.PositionZ);
+                Gizmos.DrawWireCube(nodePosition, new Vector3(0.8f, 1.5f, 0.8f));
             }
         }
     }
@@ -97,6 +100,16 @@ public class GridController : MonoBehaviour
         // Devuelve el nodo correspondiente en la cuadrícula de la posicion especificada
         return gridTiles[gridX, gridZ];
     }
+
+    public Vector3 NextPathPoint(Node node) //siguiente punto de paso
+    {
+        int gridX = (int)(xStart+node.PositionX);
+        int gridZ = (int)(zStart+node.PositionZ);
+
+        return new Vector3(gridX,0, gridZ);
+    }
+
+
 
     public List<Node> GetNeighborNodes (Node node) 
     {
@@ -138,9 +151,19 @@ public class GridController : MonoBehaviour
                 int checkPositionZ = node.PositionZ + z;
 
                 // Verificar si las coordenadas están dentro de los límites de la cuadrícula // Esto se hace para asegurarse de que no se acceda a posiciones fuera de la cuadrícula, lo que podría causar errores.
-                if ( checkPositionX >= 0 && checkPositionX <= (horizontalCellCount + 1) && checkPositionZ >= 0 && checkPositionZ < (verticalCellCount + 1))
+                if (checkPositionX >= 0 && checkPositionX < verticalCellCount && checkPositionZ >= 0 && checkPositionZ < horizontalCellCount)
                 {
-                    neighbours.Add(gridTiles[checkPositionX,checkPositionZ]);
+
+                    try
+                    {
+                        neighbours.Add(gridTiles[checkPositionX, checkPositionZ]);
+
+                    }
+                    catch (System.Exception ex)
+                    {
+                        throw;
+                    }
+                   //neighbours.Add(gridTiles[checkPositionX,checkPositionZ]);
                 }        
             }
         }

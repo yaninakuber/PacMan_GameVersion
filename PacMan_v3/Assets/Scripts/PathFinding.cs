@@ -4,30 +4,59 @@ using System.Linq;
 using UnityEngine;
 
 public class PathFinding : MonoBehaviour
-{   
-    List<Node> openList = new List<Node>(); // Lista de nodos abiertos para explorar
-    List<Node> closedList = new List<Node>(); // Lista de nodos cerrados (explorados y considerados)
+{
+    List<Node> path = new List<Node>(); // almacenar los nodos que forman la ruta desde el nodo de destino hasta el nodo de inicio.
 
     int MovementCost = 10; // valor del costo de movimiento
 
-    GridController grid; // referencia al controllador de la cuadricula
+    public GridController grid; // referencia al controllador de la cuadricula
 
+    public GameObject PacMan;
+
+    //Movement
+    public float SpeedGhost = 3f;
+    Vector3 nextPosition;
+    Vector3 destination;
+
+    //Rotation
+    Vector3 up = Vector3.zero,
+    right = new Vector3(0, 90, 0),
+    down = new Vector3(0, 180, 0),
+    left = new Vector3(0, 270, 0),
+    currentDirection = Vector3.zero;
+
+    Node lastVisitedNode;
+
+
+
+
+    /*
     private void Awake()
     {
-        grid = GetComponent<GridController>(); //busca el componente grid controlle en el mismo objeto del script y almacena esa referencia en la variable grid 
+        grid = GetComponent<GridController>(); 
     }
+    */
+
+    private void Start()
+    {
+        destination = transform.position;
+    }
+
 
     private void Update()
     {
-        FindPath();
+        MoveGhost();
     }
 
 
     void FindPath()
     {
-        Node startNode = grid.NodeRequest(grid.start.transform.position); // current in grid
-        Node goalNode = grid.NodeRequest(grid.goal.transform.position); // pacmans position in grid
-        
+        Node startNode = grid.NodeRequest(this.transform.position); // current in grid
+        Node goalNode = grid.NodeRequest(PacMan.transform.position); // pacmans position in grid
+
+        List<Node> openList = new List<Node>(); // Lista de nodos abiertos para explorar (se colocan aqui para que las calcule en cada update) (siempre se crea una nueva lista abierta y cerrada)
+        List<Node> closedList = new List<Node>(); // Lista de nodos cerrados (explorados y considerados)
+
         //add start Node
         openList.Add(startNode);
         
@@ -54,7 +83,7 @@ public class PathFinding : MonoBehaviour
             }
             foreach (Node neighbor in grid.GetNeighborNodes(currentNode)) //sino se encontro el objetivo se procede a explorar a los vecinos del current node //por cada vecino: 
             {
-                if(!neighbor.IsWalkable || closedList.Contains(neighbor)) // se verifica que sea transitable y q no este en la closed list 
+                if(!neighbor.IsWalkable || closedList.Contains(neighbor) || neighbor == lastVisitedNode) // se verifica que sea transitable y q no este en la closed list 
                 {
                     continue;
                 }
@@ -76,7 +105,9 @@ public class PathFinding : MonoBehaviour
  
         void CalculatePath (Node startNode, Node endNode) //  rastrear la ruta desde el nodo de destino (endNode) hasta el nodo de inicio (startNode) siguiendo los enlaces de nodos padres (ParentNode) y almacenando esta ruta en una lista llamada path
         {
-            List<Node> path = new List<Node>(); // almacenar los nodos que forman la ruta desde el nodo de destino hasta el nodo de inicio.
+            lastVisitedNode = startNode; //coloco el start node en ya visitado 
+            path.Clear(); // me aseguro que la lista este vacia antes de calcular una nueva ruta 
+
             Node currentNode = goalNode; // porque comenzamos desde el nodo de destino y retrocedemos hacia el nodo de inicio.
 
             while (currentNode != startNode) //  recorrer la ruta desde el nodo de destino hasta el nodo de inicio. El bucle continúa hasta que currentNode sea igual al nodo de inicio (startNode).
@@ -104,6 +135,50 @@ public class PathFinding : MonoBehaviour
         }
     }
 
+    void MoveGhost()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, destination, SpeedGhost * Time.deltaTime);
+        if(Vector3.Distance(transform.position, destination) < 0.0001f) 
+        {
+            FindPath();
+
+            if (path.Count > 0)
+            {
+                //Destination
+                nextPosition = grid.NextPathPoint(path[0]);
+                destination = nextPosition;
+
+                //Rotation
+                SetDirection(); //actualizo rotacion
+                transform.localEulerAngles = currentDirection; //transformo el angulo local 
+            }
+
+        }
+
+        void SetDirection ()
+        {
+            int directionX = (int)(nextPosition.x - transform.position.x);
+            int directionZ = (int)(nextPosition.z - transform.position.z);
+
+            if (directionX == 0 && directionZ > 0)
+            {
+                currentDirection = up;
+            }
+            else if (directionX == 0 && directionZ < 0) 
+            {
+                currentDirection = down;
+            }
+            else if (directionX > 0 && directionZ == 0)
+            {
+                currentDirection = right;
+            }
+            else if (directionX < 0 && directionZ == 0)
+            {
+                currentDirection = left;
+            }
+
+        }
+    }
 
 
 }
