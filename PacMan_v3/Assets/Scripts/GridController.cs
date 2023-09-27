@@ -153,17 +153,7 @@ public class GridController : MonoBehaviour
                 // Verificar si las coordenadas están dentro de los límites de la cuadrícula // Esto se hace para asegurarse de que no se acceda a posiciones fuera de la cuadrícula, lo que podría causar errores.
                 if (checkPositionX >= 0 && checkPositionX < verticalCellCount && checkPositionZ >= 0 && checkPositionZ < horizontalCellCount)
                 {
-
-                    try
-                    {
-                        neighbours.Add(gridTiles[checkPositionX, checkPositionZ]);
-
-                    }
-                    catch (System.Exception ex)
-                    {
-                        throw;
-                    }
-                   //neighbours.Add(gridTiles[checkPositionX,checkPositionZ]);
+                   neighbours.Add(gridTiles[checkPositionX,checkPositionZ]);
                 }        
             }
         }
