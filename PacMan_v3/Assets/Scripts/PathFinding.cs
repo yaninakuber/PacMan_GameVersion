@@ -9,7 +9,7 @@ public enum GhostStates
     Home,
     LeavingHome, //salio de casa
     Chase, //perseguir
-    Scatter,
+    Scatter, // desvio
     Frightend, //pastilla de poder
     GotEaten, //fue comido, ojos
 }
@@ -165,7 +165,7 @@ public class PathFinding : MonoBehaviour
         }
         //reverse path to get is sorted right
         path.Reverse(); // Para obtener la ruta en el orden correcto, se invierte la lista utilizando el método Reverse()
-        grid.path = path; // se almacena la ruta 
+        //grid.path = path; // se almacena la ruta 
 
     }
 
