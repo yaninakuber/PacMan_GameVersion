@@ -12,7 +12,14 @@ public class PathFinding : MonoBehaviour
     public GridController grid; // referencia al controllador de la cuadricula
 
     //TARGET//
-    public GameObject PacMan;
+    public Transform CurrentTarget; 
+    
+    public Transform PacManTarget;
+    public Transform HomeTarget;
+    public Transform FrightedTarget;
+    public Transform ScatterTarget;
+    public Transform LeavingHomeTarget; //<<<<<
+
 
     //MOVEMENT//
     public float SpeedGhost = 3f;
@@ -39,7 +46,9 @@ public class PathFinding : MonoBehaviour
 
     public GhostStates state;
 
-
+    //APPEARENCE
+    int activeAppearance; // 0 = NORMAL, 1 = FRIGHTENED, 2 = EYES ONLY 
+    public GameObject[] appearance;
 
 
 
@@ -52,14 +61,14 @@ public class PathFinding : MonoBehaviour
 
     private void Update()
     {
-        MoveGhost();
+        CheckState();
     }
 
 
     void FindPath()
     {
         Node startNode = grid.NodeRequest(this.transform.position); // current in grid
-        Node goalNode = grid.NodeRequest(PacMan.transform.position); // pacmans position in grid
+        Node goalNode = grid.NodeRequest(CurrentTarget.position); // pacmans position in grid
 
         List<Node> openList = new List<Node>(); // Lista de nodos abiertos para explorar (se colocan aqui para que las calcule en cada update) (siempre se crea una nueva lista abierta y cerrada)
         List<Node> closedList = new List<Node>(); // Lista de nodos cerrados (explorados y considerados)
@@ -131,7 +140,6 @@ public class PathFinding : MonoBehaviour
 
     }
 
-
     int GetDistance(Node a, Node b) // estimación de la distancia entre dos nodos en una cuadrícula //  esta distancia se utiliza para ayudar a determinar la prioridad de exploración de los nodos vecinos
     {
         // // Calcula la diferencia en las coordenadas X e Z entre los nodos a y b.
@@ -143,7 +151,6 @@ public class PathFinding : MonoBehaviour
         // Multiplica la distancia total por un valor de costo de movimiento (MovementCost).
         return MovementCost * totalDistance;
     }
-
 
     void MoveGhost()
     {
@@ -189,6 +196,48 @@ public class PathFinding : MonoBehaviour
 
     }
     
+    void CheckState()
+    {
+        switch (state)
+        {
+            case GhostStates.Home:
+                activeAppearance = 0;
+                SetAppearance();
+                break;
+            case GhostStates.LeavingHome:
+                activeAppearance = 0;
+                SetAppearance();
+                break;
+            //CHASE PACMAN
+            case GhostStates.Chase:
+                activeAppearance = 0;
+                SetAppearance();
+                CurrentTarget = PacManTarget;
+                MoveGhost();
+                break;
+            case GhostStates.Scatter:
+                activeAppearance = 0;
+                SetAppearance();
+                break;
+            case GhostStates.Frightend:
+                activeAppearance = 1;
+                SetAppearance();
+                CurrentTarget = FrightedTarget;
+                MoveGhost();
+                break;
+            case GhostStates.GotEaten:
+                activeAppearance = 2;
+                SetAppearance();
+                break;
+        }
+    }
 
+    void SetAppearance()
+    {
+        for (int i = 0; i < appearance.Length; i++)
+        {
+            appearance[i].SetActive(i == activeAppearance); // i == ... devuelve un bool.
+        }
+    }
 
 }
