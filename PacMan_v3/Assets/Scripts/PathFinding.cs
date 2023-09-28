@@ -293,8 +293,45 @@ public class PathFinding : MonoBehaviour
                 activeAppearance = 0;
                 SetAppearance();
                 SpeedGhost = 3f;
-                currentTarget = PacManTarget;
-                MoveGhost();
+                
+                //Personalidades
+                if(Ghost == GhostName.Clyde)
+                {
+                    if (Vector3.Distance(transform.position, PacManTarget.position) <= 8)
+                    {
+
+                        if (!ScatterTarget.Contains(currentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero >>>>>>>>>>>>>
+                        {
+                            currentTarget = ScatterTarget[0]; // sino siempre se va a poner en cero
+                        }
+                        //cambio objetivo de target
+                        //movimiento hacia objetivos del scatter >>>> codigo repetido
+                        for (int i = 0; i < ScatterTarget.Count; i++)
+                        {
+                            if (Vector3.Distance(transform.position, ScatterTarget[i].position) < 0.0001f && currentTarget == ScatterTarget[i])
+                            {
+                                i++;
+                                if (i >= ScatterTarget.Count)
+                                {
+                                    i = 0;
+                                }
+                                currentTarget = ScatterTarget[i];
+                                continue;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        currentTarget = PacManTarget;
+                    } 
+                }
+                //(momentaneo)
+                if (Ghost != GhostName.Clyde)
+                {
+                    currentTarget = PacManTarget;
+                }
+
+                    MoveGhost();
                 break;
 
             case GhostStates.Scatter:
