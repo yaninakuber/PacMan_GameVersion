@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3047364875686951651}
   - component: {fileID: 8769977096567034234}
   - component: {fileID: 8791358257476702354}
+  - component: {fileID: 75590700318314885}
   m_Layer: 0
   m_Name: Pacman
   m_TagString: Untagged
@@ -82,6 +83,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &75590700318314885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050097685018068320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d9e8243fb5300240b7ef901c581d28c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  unWalkable:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1001 &7843062506133750040
 PrefabInstance:
   m_ObjectHideFlags: 0
