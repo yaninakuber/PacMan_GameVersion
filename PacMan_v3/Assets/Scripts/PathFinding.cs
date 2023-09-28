@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+//STATEMACHINE//
+public enum GhostStates
+{
+    Home,
+    LeavingHome, //salio de casa
+    Chase, //perseguir
+    Scatter,
+    Frightend, //pastilla de poder
+    GotEaten, //fue comido, ojos
+}
+
+
 public class PathFinding : MonoBehaviour
 {
     //PATHFINDING//
@@ -12,14 +24,10 @@ public class PathFinding : MonoBehaviour
     public GridController grid; // referencia al controllador de la cuadricula
 
     //TARGET//
-    public Transform CurrentTarget; 
-    
+    private Transform currentTarget;
     public Transform PacManTarget;
     public List<Transform> HomeTarget = new List<Transform>();
-    public Transform FrightedTarget;
     public List<Transform> ScatterTarget = new List<Transform>();
-    public Transform LeavingHomeTarget; //<<<<<
-
 
     //MOVEMENT//
     public float SpeedGhost = 3f;
@@ -33,23 +41,26 @@ public class PathFinding : MonoBehaviour
     left = new Vector3(0, 270, 0),
     currentDirection = Vector3.zero;
 
-    //STATEMACHINE//
-    public enum GhostStates
-    {
-        Home,
-        LeavingHome, //salio de casa
-        Chase, //perseguir
-        Scatter,
-        Frightend, //pastilla de poder
-        GotEaten, //fue comido, ojos
-    }
-
     public GhostStates state;
 
     //APPEARENCE
     int activeAppearance; // 0 = NORMAL, 1 = FRIGHTENED, 2 = EYES ONLY 
     public GameObject[] appearance;
 
+    //REALESE INFO
+    public int PointsToCollect;
+    public bool realesed = false;
+
+    // TIMER INFO
+    float timerHome = 3f;
+    float timerFrightened = 5f;
+    float timerChase = 20f;
+    float timerScatter = 7f;
+
+    float currentTimerHome = 0f;
+    float currentTimerFrightened = 0f;
+    float currentTimerChase = 0f;
+    float currentTimerScatter = 0f;
 
 
 
@@ -67,6 +78,7 @@ public class PathFinding : MonoBehaviour
     private void Update()
     {
         CheckState();
+        Timing();
     }
 
     void ToggleMeshRenderer(List<Transform> targets, bool enable)
@@ -84,7 +96,7 @@ public class PathFinding : MonoBehaviour
     void FindPath()
     {
         Node startNode = grid.NodeRequest(this.transform.position); // current in grid
-        Node goalNode = grid.NodeRequest(CurrentTarget.position); // pacmans position in grid
+        Node goalNode = grid.NodeRequest(currentTarget.position); // pacmans position in grid
 
         List<Node> openList = new List<Node>(); // Lista de nodos abiertos para explorar (se colocan aqui para que las calcule en cada update) (siempre se crea una nueva lista abierta y cerrada)
         List<Node> closedList = new List<Node>(); // Lista de nodos cerrados (explorados y considerados)
@@ -222,21 +234,21 @@ public class PathFinding : MonoBehaviour
                 SetAppearance();
                 SpeedGhost = 1.5f; 
 
-                if (!HomeTarget.Contains(CurrentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
+                if (!HomeTarget.Contains(currentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
                 {
-                    CurrentTarget = HomeTarget[0]; // sino siempre se va a poner en cero
+                    currentTarget = HomeTarget[0]; // sino siempre se va a poner en cero
                 }
 
                 for (int i = 0; i < HomeTarget.Count; i++)
                 {
-                    if (Vector3.Distance(transform.position, HomeTarget[i].position) < 0.0001f && CurrentTarget == HomeTarget[i])
+                    if (Vector3.Distance(transform.position, HomeTarget[i].position) < 0.0001f && currentTarget == HomeTarget[i])
                     {
                         i++;
                         if (i >= HomeTarget.Count)
                         {
                             i = 0;
                         }
-                        CurrentTarget = HomeTarget[i];
+                        currentTarget = HomeTarget[i];
                         continue;
                     }
                 }
@@ -253,7 +265,7 @@ public class PathFinding : MonoBehaviour
                 activeAppearance = 0;
                 SetAppearance();
                 SpeedGhost = 3f;
-                CurrentTarget = PacManTarget;
+                currentTarget = PacManTarget;
                 MoveGhost();
                 break;
 
@@ -262,22 +274,22 @@ public class PathFinding : MonoBehaviour
                 SetAppearance();
                 SpeedGhost = 3f;
                 
-                if (!ScatterTarget.Contains(CurrentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
+                if (!ScatterTarget.Contains(currentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
                 {
-                    CurrentTarget = ScatterTarget[0]; // sino siempre se va a poner en cero
+                    currentTarget = ScatterTarget[0]; // sino siempre se va a poner en cero
                 }
 
                 //movimiento hacia objetivos del scatter
                 for (int i = 0; i < ScatterTarget.Count; i++)
                 {
-                    if (Vector3.Distance(transform.position, ScatterTarget[i].position) < 0.0001f && CurrentTarget == ScatterTarget[i])
+                    if (Vector3.Distance(transform.position, ScatterTarget[i].position) < 0.0001f && currentTarget == ScatterTarget[i])
                     {
                         i++;
                         if (i >= ScatterTarget.Count)
                         {
                             i = 0;
                         }
-                        CurrentTarget = ScatterTarget[i];
+                        currentTarget = ScatterTarget[i];
                         continue;
                     }
                 } 
@@ -289,22 +301,22 @@ public class PathFinding : MonoBehaviour
                 SetAppearance();
                 SpeedGhost = 1.5f;
 
-                if (!ScatterTarget.Contains(CurrentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
+                if (!ScatterTarget.Contains(currentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
                 {
-                    CurrentTarget = ScatterTarget[0]; // sino siempre se va a poner en cero
+                    currentTarget = ScatterTarget[0]; // sino siempre se va a poner en cero
                 }
 
                 //movimiento hacia objetivos 
                 for (int i = 0; i < ScatterTarget.Count; i++)
                 {
-                    if (Vector3.Distance(transform.position, ScatterTarget[i].position) < 0.0001f && CurrentTarget == ScatterTarget[i])
+                    if (Vector3.Distance(transform.position, ScatterTarget[i].position) < 0.0001f && currentTarget == ScatterTarget[i])
                     {
                         i++;
                         if (i >= ScatterTarget.Count)
                         {
                             i = 0;
                         }
-                        CurrentTarget = ScatterTarget[i];
+                        currentTarget = ScatterTarget[i];
                         continue;
                     }
                 }
@@ -315,7 +327,7 @@ public class PathFinding : MonoBehaviour
                 activeAppearance = 2;
                 SetAppearance();
                 SpeedGhost = 10f;
-                CurrentTarget = HomeTarget[0];
+                currentTarget = HomeTarget[0];
 
                 if (Vector3.Distance(transform.position, HomeTarget[0].position) < 0.0001f)
                 {
@@ -332,6 +344,42 @@ public class PathFinding : MonoBehaviour
         for (int i = 0; i < appearance.Length; i++)
         {
             appearance[i].SetActive(i == activeAppearance); // i == ... devuelve un bool.
+        }
+    }
+    
+    void Timing()
+    {
+        if (state == GhostStates.Home && realesed)
+        {
+            currentTimerHome = currentTimerHome + Time.deltaTime;
+            HandleTimer(timerHome, ref currentTimerHome, GhostStates.Chase);
+        }
+        if(state == GhostStates.Frightend)
+        {
+            if (state != GhostStates.GotEaten)
+            {
+                currentTimerFrightened = currentTimerFrightened + Time.deltaTime;
+                HandleTimer(timerFrightened, ref currentTimerFrightened, GhostStates.Chase);
+            }
+        }
+        if (state == GhostStates.Chase)
+        {
+            currentTimerChase = currentTimerChase + Time.deltaTime;
+            HandleTimer(timerChase, ref currentTimerChase, GhostStates.Scatter);
+        }
+        if (state == GhostStates.Scatter)
+        {
+            currentTimerScatter = currentTimerScatter + Time.deltaTime;
+            HandleTimer(timerScatter, ref currentTimerScatter, GhostStates.Chase);
+        }
+    }
+
+    void HandleTimer(float timerLimit,ref float currentTimer, GhostStates nextState)
+    {
+        if (currentTimer >= timerLimit)
+        {
+            currentTimer = 0f;
+            state = nextState;
         }
     }
 
