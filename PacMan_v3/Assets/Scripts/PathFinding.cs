@@ -15,9 +15,9 @@ public class PathFinding : MonoBehaviour
     public Transform CurrentTarget; 
     
     public Transform PacManTarget;
-    public Transform HomeTarget;
+    public List<Transform> HomeTarget = new List<Transform>();
     public Transform FrightedTarget;
-    public Transform[] ScatterTarget;
+    public List<Transform> ScatterTarget = new List<Transform>();
     public Transform LeavingHomeTarget; //<<<<<
 
 
@@ -119,6 +119,7 @@ public class PathFinding : MonoBehaviour
                     }
                 }
             }
+            lastVisitedNode = null;
         }
     }
  
@@ -203,6 +204,27 @@ public class PathFinding : MonoBehaviour
             case GhostStates.Home:
                 activeAppearance = 0;
                 SetAppearance();
+                SpeedGhost = 1.5f; 
+
+                if (!HomeTarget.Contains(CurrentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
+                {
+                    CurrentTarget = HomeTarget[0]; // sino siempre se va a poner en cero
+                }
+
+                for (int i = 0; i < HomeTarget.Count; i++)
+                {
+                    if (Vector3.Distance(transform.position, HomeTarget[i].position) < 0.0001f && CurrentTarget == HomeTarget[i])
+                    {
+                        i++;
+                        if (i >= HomeTarget.Count)
+                        {
+                            i = 0;
+                        }
+                        CurrentTarget = HomeTarget[i];
+                        continue;
+                    }
+                }
+                MoveGhost();
                 break;
 
             case GhostStates.LeavingHome:
@@ -214,6 +236,7 @@ public class PathFinding : MonoBehaviour
             case GhostStates.Chase:
                 activeAppearance = 0;
                 SetAppearance();
+                SpeedGhost = 3f;
                 CurrentTarget = PacManTarget;
                 MoveGhost();
                 break;
@@ -221,37 +244,69 @@ public class PathFinding : MonoBehaviour
             case GhostStates.Scatter:
                 activeAppearance = 0;
                 SetAppearance();
+                SpeedGhost = 3f;
                 
-                if (CurrentTarget != ScatterTarget[0] && CurrentTarget != ScatterTarget[1] && CurrentTarget != ScatterTarget[2]) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
+                if (!ScatterTarget.Contains(CurrentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
                 {
                     CurrentTarget = ScatterTarget[0]; // sino siempre se va a poner en cero
                 }
+
                 //movimiento hacia objetivos del scatter
-                if (Vector3.Distance(transform.position, ScatterTarget[0].position) < 0.0001f && CurrentTarget == ScatterTarget[0])
+                for (int i = 0; i < ScatterTarget.Count; i++)
                 {
-                    CurrentTarget = ScatterTarget[1];
-                }
-                if (Vector3.Distance(transform.position, ScatterTarget[1].position) < 0.0001f && CurrentTarget == ScatterTarget[1])
-                {
-                    CurrentTarget = ScatterTarget[2];
-                }
-                if (Vector3.Distance(transform.position, ScatterTarget[2].position) < 0.0001f && CurrentTarget == ScatterTarget[2])
-                {
-                    CurrentTarget = ScatterTarget[0];
-                }
+                    if (Vector3.Distance(transform.position, ScatterTarget[i].position) < 0.0001f && CurrentTarget == ScatterTarget[i])
+                    {
+                        i++;
+                        if (i >= ScatterTarget.Count)
+                        {
+                            i = 0;
+                        }
+                        CurrentTarget = ScatterTarget[i];
+                        continue;
+                    }
+                } 
                 MoveGhost();
                 break; 
 
             case GhostStates.Frightend:
                 activeAppearance = 1;
                 SetAppearance();
-                CurrentTarget = FrightedTarget;
+                SpeedGhost = 1.5f;
+
+                if (!ScatterTarget.Contains(CurrentTarget)) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
+                {
+                    CurrentTarget = ScatterTarget[0]; // sino siempre se va a poner en cero
+                }
+
+                //movimiento hacia objetivos 
+                for (int i = 0; i < ScatterTarget.Count; i++)
+                {
+                    if (Vector3.Distance(transform.position, ScatterTarget[i].position) < 0.0001f && CurrentTarget == ScatterTarget[i])
+                    {
+                        i++;
+                        if (i >= ScatterTarget.Count)
+                        {
+                            i = 0;
+                        }
+                        CurrentTarget = ScatterTarget[i];
+                        continue;
+                    }
+                }
                 MoveGhost();
                 break;
 
             case GhostStates.GotEaten:
                 activeAppearance = 2;
                 SetAppearance();
+                SpeedGhost = 10f;
+                CurrentTarget = HomeTarget[0];
+
+                if (Vector3.Distance(transform.position, HomeTarget[0].position) < 0.0001f)
+                {
+                    state = GhostStates.Home;
+                }
+
+                MoveGhost();
                 break;
         }
     }
