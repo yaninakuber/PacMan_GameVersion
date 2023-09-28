@@ -56,6 +56,11 @@ public class PathFinding : MonoBehaviour
     private void Start()
     {
         destination = transform.position;
+        currentDirection = up;
+
+        ToggleMeshRenderer(ScatterTarget, false);
+        ToggleMeshRenderer(HomeTarget, false);
+
     }
 
 
@@ -64,6 +69,17 @@ public class PathFinding : MonoBehaviour
         CheckState();
     }
 
+    void ToggleMeshRenderer(List<Transform> targets, bool enable)
+    {
+        foreach (Transform target in targets)
+        {
+            MeshRenderer meshRenderer = target.GetComponent<MeshRenderer>();
+            if (meshRenderer != null)
+            {
+                meshRenderer.enabled = enable;
+            }
+        }
+    }
 
     void FindPath()
     {
