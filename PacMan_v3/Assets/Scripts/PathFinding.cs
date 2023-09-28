@@ -17,7 +17,7 @@ public class PathFinding : MonoBehaviour
     public Transform PacManTarget;
     public Transform HomeTarget;
     public Transform FrightedTarget;
-    public Transform ScatterTarget;
+    public Transform[] ScatterTarget;
     public Transform LeavingHomeTarget; //<<<<<
 
 
@@ -204,10 +204,12 @@ public class PathFinding : MonoBehaviour
                 activeAppearance = 0;
                 SetAppearance();
                 break;
+
             case GhostStates.LeavingHome:
                 activeAppearance = 0;
                 SetAppearance();
                 break;
+
             //CHASE PACMAN
             case GhostStates.Chase:
                 activeAppearance = 0;
@@ -215,16 +217,38 @@ public class PathFinding : MonoBehaviour
                 CurrentTarget = PacManTarget;
                 MoveGhost();
                 break;
+
             case GhostStates.Scatter:
                 activeAppearance = 0;
                 SetAppearance();
-                break;
+                
+                if (CurrentTarget != ScatterTarget[0] && CurrentTarget != ScatterTarget[1] && CurrentTarget != ScatterTarget[2]) // comprueba que el target no sea ninguno de los dispersion, sino lo cambia a cero
+                {
+                    CurrentTarget = ScatterTarget[0]; // sino siempre se va a poner en cero
+                }
+                //movimiento hacia objetivos del scatter
+                if (Vector3.Distance(transform.position, ScatterTarget[0].position) < 0.0001f && CurrentTarget == ScatterTarget[0])
+                {
+                    CurrentTarget = ScatterTarget[1];
+                }
+                if (Vector3.Distance(transform.position, ScatterTarget[1].position) < 0.0001f && CurrentTarget == ScatterTarget[1])
+                {
+                    CurrentTarget = ScatterTarget[2];
+                }
+                if (Vector3.Distance(transform.position, ScatterTarget[2].position) < 0.0001f && CurrentTarget == ScatterTarget[2])
+                {
+                    CurrentTarget = ScatterTarget[0];
+                }
+                MoveGhost();
+                break; 
+
             case GhostStates.Frightend:
                 activeAppearance = 1;
                 SetAppearance();
                 CurrentTarget = FrightedTarget;
                 MoveGhost();
                 break;
+
             case GhostStates.GotEaten:
                 activeAppearance = 2;
                 SetAppearance();
