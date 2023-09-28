@@ -11,12 +11,24 @@ public enum GhostStates
     Chase, //perseguir
     Scatter, // desvio
     Frightend, //pastilla de poder
-    GotEaten, //fue comido, ojos
+    GotEaten //fue comido, ojos
 }
+
+public enum GhostName
+{
+    Blinky,
+    Clyde,
+    Inky,
+    Pinky
+}
+
 
 
 public class PathFinding : MonoBehaviour
 {
+    public GhostName Ghost;
+    public GhostStates state;
+
     //PATHFINDING//
     List<Node> path = new List<Node>(); // almacenar los nodos que forman la ruta desde el nodo de destino hasta el nodo de inicio.
     int MovementCost = 10; //Heuristic Distance - Cost per step
@@ -40,8 +52,6 @@ public class PathFinding : MonoBehaviour
     down = new Vector3(0, 180, 0),
     left = new Vector3(0, 270, 0),
     currentDirection = Vector3.zero;
-
-    public GhostStates state;
 
     //APPEARENCE
     int activeAppearance; // 0 = NORMAL, 1 = FRIGHTENED, 2 = EYES ONLY 
@@ -166,6 +176,24 @@ public class PathFinding : MonoBehaviour
         //reverse path to get is sorted right
         path.Reverse(); // Para obtener la ruta en el orden correcto, se invierte la lista utilizando el método Reverse()
         //grid.path = path; // se almacena la ruta 
+
+        if (Ghost == GhostName.Blinky)
+        {
+            grid.BlinkyPath = path;
+        }
+        if (Ghost == GhostName.Clyde)
+        {
+            grid.ClydePath = path;
+        }
+        if (Ghost == GhostName.Inky)
+        {
+            grid.InkyPath = path;
+        }
+        if (Ghost == GhostName.Pinky)
+        {
+            grid.PinkyPath = path;
+        }
+
 
     }
 

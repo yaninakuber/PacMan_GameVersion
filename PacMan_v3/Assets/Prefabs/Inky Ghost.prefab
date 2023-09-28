@@ -69,6 +69,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 653b8432452aae94ea0740dcd49e2a17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Ghost: 2
+  state: 0
   grid: {fileID: 0}
   PacManTarget: {fileID: 0}
   HomeTarget:
@@ -79,7 +81,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   SpeedGhost: 3
-  state: 0
   appearance:
   - {fileID: 7725711132866125522}
   - {fileID: 8333570506751120152}

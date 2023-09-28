@@ -9,13 +9,14 @@ public class GridController : MonoBehaviour
     public GameObject StartPointOfGrill;
     public GameObject EndPointOfGrill;
     
-    //DEBUG
-    //public GameObject start;
-    //public GameObject goal;
-
     Node[,] gridTiles; // representa la grilla. Cada elemento es un nodo que contiene informacion de la clase
 
-    public List<Node> path; // Lista de nodos que representan el camino calculado por el algoritmo
+    public List<Node> ClydePath; // Lista de nodos que representan el camino calculado por el algoritmo
+    public List<Node> BlinkyPath;
+    public List<Node> InkyPath;
+    public List<Node> PinkyPath;
+
+
 
     public LayerMask UnWalkable; //cuales nodos deben ser obtaculos y cuales no
 
@@ -75,13 +76,34 @@ public class GridController : MonoBehaviour
         {
             foreach (Node node in gridTiles)
             {
-                Gizmos.color = (node.IsWalkable) ? Color.white : Color.red;
+                Gizmos.color = (node.IsWalkable) ? Color.white : Color.black;
 
-                if (path != null)
+                if (ClydePath != null)
                 {
-                    if (path.Contains(node))
+                    if (ClydePath.Contains(node))
                     {
-                        Gizmos.color = Color.green;
+                        Gizmos.color = Color.yellow;
+                    }
+                }
+                if (InkyPath != null)
+                {
+                    if (InkyPath.Contains(node))
+                    {
+                        Gizmos.color = Color.cyan;
+                    }
+                }
+                if (PinkyPath != null)
+                {
+                    if (PinkyPath.Contains(node))
+                    {
+                        Gizmos.color = Color.magenta;
+                    }
+                }
+                if (BlinkyPath != null)
+                {
+                    if (BlinkyPath.Contains(node))
+                    {
+                        Gizmos.color = Color.red;
                     }
                 }
 
