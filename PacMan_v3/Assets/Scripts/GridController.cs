@@ -11,9 +11,6 @@ public class GridController : MonoBehaviour
     
     Node[,] gridTiles; // representa la grilla. Cada elemento es un nodo que contiene informacion de la clase
 
-    Node[,] tileResquested;
-
-
     public List<Node> ClydePath; // Lista de nodos que representan el camino calculado por el algoritmo
     public List<Node> BlinkyPath;
     public List<Node> InkyPath;
@@ -39,7 +36,6 @@ public class GridController : MonoBehaviour
     private void Awake()
     {
         CreateGrid();
-        tileResquested = new Node[50,50];
     }
 
 
@@ -116,33 +112,6 @@ public class GridController : MonoBehaviour
             }
         }
     }
-
-    /*
-    public Node NodeRequest(Vector3 position) //Mapear un posición a un nodo en la grilla
-    {       
-        // Calcula la distancia desde la posición a lo largo de los ejes X y Z
-        int gridX = (int)Vector3.Distance(new Vector3(position.x, 0, 0), new Vector3(xStart, 0, 0)); // Esto da una idea de cuán lejos está la posición en el eje X desde el inicio de la cuadrícula. 
-        int gridZ = (int)Vector3.Distance(new Vector3(0,0, position.z), new Vector3(0, 0, zStart));
-
-        return tileResquested[gridX, gridZ];
-
-        // Devuelve el nodo correspondiente en la cuadrícula de la posicion especificada
-        //return gridTiles[gridX, gridZ];
-
-        /*
-        if (gridX >= 0 && gridX < horizontalCellCount && gridZ >= 0 && gridZ < verticalCellCount)
-        {
-            return gridTiles[gridX, gridZ];
-        }
-        else
-        {
-            Debug.LogWarning("La posición está fuera de los límites de la cuadrícula.");
-            return null; 
-        }
-        
-
-    }
-    */
 
     public Node NodeRequest(Vector3 position)
     {
