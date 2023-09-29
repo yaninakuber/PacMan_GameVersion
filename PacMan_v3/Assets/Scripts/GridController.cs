@@ -27,8 +27,8 @@ public class GridController : MonoBehaviour
     int xEnd;
     int zEnd;
 
-    int horizontalCellCount;
     int verticalCellCount;
+    int horizontalCellCount;
 
     int cellWidth = 1;
     int cellHeight = 1;
@@ -49,19 +49,19 @@ public class GridController : MonoBehaviour
         zEnd = (int)EndPointOfGrill.transform.position.z;
 
         //calcula el numero de celdas en la grilla en los dos ejes
-        verticalCellCount = (int)(((xEnd - xStart)+1) / cellWidth);
-        horizontalCellCount = (int)(((zEnd - zStart)+1) / cellHeight);
+        horizontalCellCount = (int)(((xEnd - xStart)+1) / cellWidth);
+        verticalCellCount = (int)(((zEnd - zStart)+1) / cellHeight);
 
-        gridTiles = new Node[verticalCellCount, horizontalCellCount]; // matriz que representa la cuadricula del juego - especifico la extension de la cuadricula 
+        gridTiles = new Node[horizontalCellCount, verticalCellCount]; // matriz que representa la cuadricula del juego - especifico la extension de la cuadricula 
 
         UpdateGrid(); // llena la matriz gridTiles con nodos determinando si cada celda es transitable o no
     }   
 
     public void UpdateGrid()
     {
-        for (int i = 0; i < verticalCellCount; i++)
+        for (int i = 0; i < horizontalCellCount; i++)
         {
-            for(int j = 0; j < horizontalCellCount; j++)
+            for(int j = 0; j < verticalCellCount; j++)
             {
                 bool walkable = !(Physics.CheckSphere(new Vector3(xStart + i, 0, zStart + j), 0.4f, UnWalkable)); // verifica si la celda es transitable : true
 
@@ -173,7 +173,7 @@ public class GridController : MonoBehaviour
                 int checkPositionZ = node.PositionZ + z;
 
                 // Verificar si las coordenadas están dentro de los límites de la cuadrícula // Esto se hace para asegurarse de que no se acceda a posiciones fuera de la cuadrícula, lo que podría causar errores.
-                if (checkPositionX >= 0 && checkPositionX < verticalCellCount && checkPositionZ >= 0 && checkPositionZ < horizontalCellCount)
+                if (checkPositionX >= 0 && checkPositionX < horizontalCellCount && checkPositionZ >= 0 && checkPositionZ < verticalCellCount)
                 {
                    neighbours.Add(gridTiles[checkPositionX,checkPositionZ]);
                 }        

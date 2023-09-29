@@ -334,6 +334,8 @@ public class PathFinding : MonoBehaviour
                     MoveGhost();
                 break;
 
+
+
             case GhostStates.Scatter:
                 activeAppearance = 0;
                 SetAppearance();
