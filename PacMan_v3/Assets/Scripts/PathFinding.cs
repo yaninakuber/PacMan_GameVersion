@@ -327,7 +327,7 @@ public class PathFinding : MonoBehaviour
                     } 
                 }
                 //(momentaneo)
-                if (Ghost != GhostName.Clyde)
+                if (Ghost == GhostName.Blinky)
                 {
                     currentTarget = PacManTarget;
                 }
