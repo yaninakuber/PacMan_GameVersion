@@ -212,7 +212,28 @@ public class GridController : MonoBehaviour
 
     public Vector3 GetNearestNonWallNode(Vector3 target)
     {
-        return
+        float minDistance = 1000;
+        int minIndexI = 0;
+        int minIndexJ = 0;
+
+        for (int i = 0; i < horizontalCellCount; i++) //recorro toda la cuadricula para ver donde hay un wall
+        {
+            for (int j = 0; j < verticalCellCount; j++)
+            {
+                if (gridTiles[i,j].IsWalkable)
+                {
+                    Vector3 nextPoint = NextPathPoint(gridTiles[i,j]);
+                    float distance = Vector3.Distance(nextPoint, target); //medimos la distancia entre el siguiente punto y el target para buscar el mas corto o mas corto que el minimo. 
+                    if (distance < minDistance) 
+                    { 
+                        minDistance = distance;
+                        minIndexI = i; //almacenamos aca por que despues de recorrer no puedo acceder a i o a j
+                        minIndexJ = j;
+                    }
+                }
+            }
+        }
+        return NextPathPoint(gridTiles[minIndexI,minIndexJ]);
     }
 
 }
