@@ -30,6 +30,8 @@ public class PathFinding : MonoBehaviour
     public GhostName Ghost;
     public GhostStates state;
 
+    public Transform Blinky;
+
     //PATHFINDING//
     List<Node> path = new List<Node>(); // almacenar los nodos que forman la ruta desde el nodo de destino hasta el nodo de inicio.
     int MovementCost = 10; //Heuristic Distance - Cost per step
@@ -326,7 +328,7 @@ public class PathFinding : MonoBehaviour
                         currentTarget = PacManTarget;
                     } 
                 }
-                //(momentaneo)
+              
                 if (Ghost == GhostName.Blinky)
                 {
                     currentTarget = PacManTarget;
@@ -337,6 +339,10 @@ public class PathFinding : MonoBehaviour
                     PinkBehavior();
                 }
                 
+                if (Ghost == GhostName.Inky)
+                {
+                    InkyBehavior();
+                }
                 
                 MoveGhost();
                 break;
@@ -480,6 +486,22 @@ public class PathFinding : MonoBehaviour
         Debug.DrawLine(transform.position, aheadTarget.position);
         currentTarget = aheadTarget;
         Destroy(aheadTarget.gameObject);
+
+    }
+
+    void InkyBehavior()
+    {
+        Transform distanceBlinKyToPacman = new GameObject().transform;
+        Transform target = new GameObject().transform;
+
+        distanceBlinKyToPacman.position = new Vector3(PacManTarget.position.x - Blinky.position.x, 0, PacManTarget.position.z - Blinky.position.z);
+        target.position = new Vector3(PacManTarget.position.x + distanceBlinKyToPacman.position.x, 0, PacManTarget.position.z + distanceBlinKyToPacman.position.z);
+
+        currentTarget.position = grid.GetNearestNonWallNode(target.position);
+        Debug.DrawLine(transform.position, currentTarget.position);
+
+        Destroy(target.gameObject);
+        Destroy(distanceBlinKyToPacman.gameObject);
 
     }
 }

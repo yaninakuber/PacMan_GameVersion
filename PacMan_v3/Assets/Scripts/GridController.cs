@@ -210,4 +210,9 @@ public class GridController : MonoBehaviour
 
     }
 
+    public Vector3 GetNearestNonWallNode(Vector3 target)
+    {
+        return
+    }
+
 }
