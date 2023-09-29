@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Timeline;
 using UnityEngine;
 
 //STATEMACHINE//
@@ -106,7 +107,7 @@ public class PathFinding : MonoBehaviour
     void FindPath()
     {
         Node startNode = grid.NodeRequest(this.transform.position); // current in grid
-        Node goalNode = grid.NodeRequest(currentTarget.position); // pacmans position in grid
+        Node goalNode = grid.NodeRequest(currentTarget.position); //
 
         List<Node> openList = new List<Node>(); // Lista de nodos abiertos para explorar (se colocan aqui para que las calcule en cada update) (siempre se crea una nueva lista abierta y cerrada)
         List<Node> closedList = new List<Node>(); // Lista de nodos cerrados (explorados y considerados)
@@ -331,7 +332,13 @@ public class PathFinding : MonoBehaviour
                     currentTarget = PacManTarget;
                 }
 
-                    MoveGhost();
+                if (Ghost == GhostName.Pinky)
+                {
+                    PinkBehavior();
+                }
+                
+                
+                MoveGhost();
                 break;
 
 
@@ -450,4 +457,29 @@ public class PathFinding : MonoBehaviour
         }
     }
 
+    void PinkBehavior()
+    {
+        Transform aheadTarget = new GameObject().transform; //crea un nuevo empty gameobject y accedemos a su transform
+        int lookAhead = 4;
+        aheadTarget.position = PacManTarget.position + PacManTarget.transform.forward * lookAhead;
+
+        //SET A TARGET
+        for (int i = lookAhead; i > 0 ; i--) 
+        {
+            if (!grid.CheckInsideGrid(aheadTarget.position))
+            {
+                lookAhead--;
+                aheadTarget.position = PacManTarget.position + PacManTarget.transform.forward * lookAhead;
+            }
+            else
+            {
+                break;
+            }
+        }
+        aheadTarget.position = PacManTarget.position + PacManTarget.transform.forward * lookAhead; //reseteo la posicion 
+        Debug.DrawLine(transform.position, aheadTarget.position);
+        currentTarget = aheadTarget;
+        Destroy(aheadTarget.gameObject);
+
+    }
 }
