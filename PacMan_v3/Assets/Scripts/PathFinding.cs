@@ -476,7 +476,7 @@ public class PathFinding : MonoBehaviour
                 break;
             }
         }
-        aheadTarget.position = PacManTarget.position + PacManTarget.transform.forward * lookAhead; //reseteo la posicion 
+
         Debug.DrawLine(transform.position, aheadTarget.position);
         currentTarget = aheadTarget;
         Destroy(aheadTarget.gameObject);

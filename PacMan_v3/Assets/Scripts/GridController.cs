@@ -154,10 +154,6 @@ public class GridController : MonoBehaviour
     }
 
 
-
-
-
-
     public Vector3 NextPathPoint(Node node) //siguiente punto de paso
     {
         int gridX = (int)(xStart+node.PositionX);
@@ -236,24 +232,13 @@ public class GridController : MonoBehaviour
         {
             return false;
         }
-        try
+
+        if (!NodeRequest(requestedPosition).IsWalkable)
         {
-            return true;
+            return false;
         }
-        catch (System.Exception)
-        {
+        return true;
 
-            throw;
-        }
-
-
-
-   
     }
-
-
-
-
-
 
 }
