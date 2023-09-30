@@ -491,16 +491,16 @@ public class PathFinding : MonoBehaviour
 
     void InkyBehavior()
     {
-        Transform distanceBlinKyToPacman = new GameObject().transform;
+        Transform distanceBlinKyToPacman = new GameObject().transform; //temporales
         Transform target = new GameObject().transform;
 
         distanceBlinKyToPacman.position = new Vector3(PacManTarget.position.x - Blinky.position.x, 0, PacManTarget.position.z - Blinky.position.z);
-        target.position = new Vector3(PacManTarget.position.x + distanceBlinKyToPacman.position.x, 0, PacManTarget.position.z + distanceBlinKyToPacman.position.z);
+        target.position = new Vector3(PacManTarget.position.x + distanceBlinKyToPacman.position.x, 0, PacManTarget.position.z + distanceBlinKyToPacman.position.z);  // punto mas alla del pacman target de inky
 
-        currentTarget.position = grid.GetNearestNonWallNode(target.position);
+        currentTarget.position = grid.GetNearestNonWallNode(target.position); 
         Debug.DrawLine(transform.position, currentTarget.position);
 
-        Destroy(target.gameObject);
+        Destroy(target.gameObject); //para limpiar memoria 
         Destroy(distanceBlinKyToPacman.gameObject);
 
     }

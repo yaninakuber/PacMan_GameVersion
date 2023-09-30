@@ -210,9 +210,9 @@ public class GridController : MonoBehaviour
 
     }
 
-    public Vector3 GetNearestNonWallNode(Vector3 target)
+    public Vector3 GetNearestNonWallNode(Vector3 target) //encontrar el nodo mas cercano al target que no sea una pared
     {
-        float minDistance = 1000;
+        float minDistance = 1000; //me aseguro que cualquier distancia encontrada sea menor en la primera iteracion
         int minIndexI = 0;
         int minIndexJ = 0;
 
@@ -220,15 +220,15 @@ public class GridController : MonoBehaviour
         {
             for (int j = 0; j < verticalCellCount; j++)
             {
-                if (gridTiles[i,j].IsWalkable)
+                if (gridTiles[i,j].IsWalkable) //verifico que la celda correspondiente sea transitable
                 {
-                    Vector3 nextPoint = NextPathPoint(gridTiles[i,j]);
+                    Vector3 nextPoint = NextPathPoint(gridTiles[i,j]); 
                     float distance = Vector3.Distance(nextPoint, target); //medimos la distancia entre el siguiente punto y el target para buscar el mas corto o mas corto que el minimo. 
-                    if (distance < minDistance) 
+                    if (distance < minDistance) //si la distancia calculada es menor que la min distancia se actualiza 
                     { 
-                        minDistance = distance;
-                        minIndexI = i; //almacenamos aca por que despues de recorrer no puedo acceder a i o a j
-                        minIndexJ = j;
+                        minDistance = distance; 
+                        minIndexI = i; //rastreamos la posicion de la celda mas cercana rastreada hasta el momento
+                        minIndexJ = j; //almacenamos aca por que despues de recorrer no puedo acceder a i o a j
                     }
                 }
             }
