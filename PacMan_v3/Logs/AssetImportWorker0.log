@@ -7221,3 +7221,38 @@ AssetImportParameters requested are different than current active one (requested
   custom:video-encoder-webm-vp8: eb34c28f22e8b96e1ab97ce403110664 -> 
   custom:audio-decoder-ogg-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
   custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
+========================================================================
+Received Import Request.
+  Time since last request: 143561.799513 seconds.
+  path: Assets/Prefabs/Clyde Ghost.prefab
+  artifactKey: Guid(14ed076b64652a24eb2fa81f1d5470d9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/Clyde Ghost.prefab using Guid(14ed076b64652a24eb2fa81f1d5470d9) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '952208f91e6d65f05451b45a886174e1') in 0.120274 seconds
+Internal: There are remaining Allocations on the JobTempAlloc. This is a leak, and will impact performance
+To Debug, run app with -diag-job-temp-memory-leak-validation cmd line argument. This will output the callstacks of the leaked allocations.
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 323
+========================================================================
+Received Import Request.
+  Time since last request: 0.616039 seconds.
+  path: Assets/Prefabs/GridObject.prefab
+  artifactKey: Guid(4c98b4afbf280444d962de7105fc3f5a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/GridObject.prefab using Guid(4c98b4afbf280444d962de7105fc3f5a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'ce272128e97add8035ab4cea74db353d') in 0.008325 seconds
+Internal: There are remaining Allocations on the JobTempAlloc. This is a leak, and will impact performance
+To Debug, run app with -diag-job-temp-memory-leak-validation cmd line argument. This will output the callstacks of the leaked allocations.
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 15
+========================================================================
+Received Import Request.
+  Time since last request: 0.000016 seconds.
+  path: Assets/Prefabs/Pinky Ghost.prefab
+  artifactKey: Guid(08811fabc153fd643aa0ddad9c0bb12a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Prefabs/Pinky Ghost.prefab using Guid(08811fabc153fd643aa0ddad9c0bb12a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '53974eef333a347cb7c7019b94f43551') in 0.051275 seconds
+Internal: There are remaining Allocations on the JobTempAlloc. This is a leak, and will impact performance
+To Debug, run app with -diag-job-temp-memory-leak-validation cmd line argument. This will output the callstacks of the leaked allocations.
+Number of updated asset objects reloaded before import = 0
+Number of asset objects unloaded after import = 282
+Editor requested this worker to shutdown with reason: Scaling down because of idle timeout
+TcpMessagingSession - receive error: operation aborted. errorcode: 995, details: La operación de E/S se anuló por una salida de subproceso o por una solicitud de aplicación.
+AssetImportWorker is now disconnected from the server
+Process exiting
+Exiting without the bug reporter. Application will terminate with return code 0
